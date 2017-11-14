@@ -48,6 +48,8 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-alpha8'
     compile 'com.github.yalantis:ucrop:2.2.1-native'
+    compile 'com.android.support:design:26.1.0'
+
     testCompile 'junit:junit:4.12'
 }
 
