@@ -13,6 +13,8 @@ import android.view.MenuItem;
 import com.github.ghcli.R;
 
 public class HomePage extends AppCompatActivity {
+    private static final String SELECTED_ITEM = "arg_selected_item";
+
 
     private BottomNavigationView navBar;
     private int mSelectedItem;
@@ -70,4 +72,6 @@ public class HomePage extends AppCompatActivity {
             ft.commit();
         }
     }
+
+    //heavily based on https://github.com/segunfamisa/bottom-navigation-demo/blob/master/app/src/main/java/com/segunfamisa/sample/bottomnav/MainActivity.java
 }
