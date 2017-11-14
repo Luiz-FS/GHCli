@@ -1,6 +1,7 @@
 package com.github.ghcli.activities;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -45,7 +46,7 @@ public class HomePage extends AppCompatActivity {
         Fragment frag = null;
         // init corresponding fragment
         switch (item.getItemId()) {
-            case R.id.menu_home:
+            case R.id.menu_profile:
                 frag = ProfileFragment.newInstance();
                 break;
             case R.id.menu_followers:
