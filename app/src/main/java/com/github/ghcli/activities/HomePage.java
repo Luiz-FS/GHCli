@@ -49,10 +49,10 @@ public class HomePage extends AppCompatActivity {
         // init corresponding fragment
         switch (item.getItemId()) {
             case R.id.menu_profile:
-                frag = ProfileFragment.newInstance();
+                frag = ProfileFragment.newInstance("test1","test2");
                 break;
             case R.id.menu_followers:
-                frag = FollowersFragment.newInstance();
+                frag = FollowersFragment.newInstance("teste1","teste2");
                 break;
         }
 
