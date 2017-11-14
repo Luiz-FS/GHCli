@@ -3,6 +3,10 @@ package com.github.ghcli.activities;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.view.MenuItem;
+
 
 
 import com.github.ghcli.R;
@@ -42,16 +46,10 @@ public class HomePage extends AppCompatActivity {
         // init corresponding fragment
         switch (item.getItemId()) {
             case R.id.menu_home:
-                frag = MenuFragment.newInstance(getString(R.string.text_home),
-                        getColorFromRes(R.color.color_home));
+                frag = ProfileFragment.newInstance();
                 break;
-            case R.id.menu_notifications:
-                frag = MenuFragment.newInstance(getString(R.string.text_notifications),
-                        getColorFromRes(R.color.color_notifications));
-                break;
-            case R.id.menu_search:
-                frag = MenuFragment.newInstance(getString(R.string.text_search),
-                        getColorFromRes(R.color.color_search));
+            case R.id.menu_followers:
+                frag = FollowersFragment.newInstance();
                 break;
         }
 
