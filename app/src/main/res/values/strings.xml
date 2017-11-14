@@ -11,4 +11,9 @@
     <string name="signed_out">SignedOut</string>
     <string name="title_activity_home_page">HomePage</string>
 
+
+    <string name="menu_home">Profile</string>
+    <string name="menu_repositories">Repositories</string>
+    <string name="menu_followers">Followers</string>
+
 </resources>
