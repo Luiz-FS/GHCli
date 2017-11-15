@@ -1,5 +1,6 @@
 package com.github.ghcli.activities;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -12,7 +13,7 @@ import android.view.MenuItem;
 
 import com.github.ghcli.R;
 
-public class HomePage extends AppCompatActivity {
+public class HomePage extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener, FollowersFragment.OnFragmentInteractionListener {
     private static final String SELECTED_ITEM = "arg_selected_item";
 
 
@@ -39,7 +40,7 @@ public class HomePage extends AppCompatActivity {
             mSelectedItem = savedInstanceState.getInt(SELECTED_ITEM, 0);
             selectedItem = navBar.getMenu().findItem(mSelectedItem);
         } else {
-            selectedItem = navBar.getMenu().getItem(0);
+            selectedItem = navBar.getMenu().getItem(1);
         }
         selectFragment(selectedItem);
     }
@@ -68,10 +69,13 @@ public class HomePage extends AppCompatActivity {
 
         if (frag != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.add(R.id.container, frag, frag.getTag());
+            ft.replace(R.id.activity_home_page, frag, frag.getTag());
             ft.commit();
         }
     }
 
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+    }
     //heavily based on https://github.com/segunfamisa/bottom-navigation-demo/blob/master/app/src/main/java/com/segunfamisa/sample/bottomnav/MainActivity.java
 }
