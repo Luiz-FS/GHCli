@@ -3,6 +3,7 @@
 buildscript {
     repositories {
         jcenter()
+        apply plugin: 'java'
         google()
     }
     dependencies {
@@ -29,6 +30,6 @@ allprojects {
     }
 }
 
-task clean(type: Delete) {
+clean {
     delete rootProject.buildDir
 }
