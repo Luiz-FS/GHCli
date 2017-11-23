@@ -8,10 +8,13 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.MenuItem;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 
 
 import com.github.ghcli.R;
+import com.github.ghcli.util.Authentication;
 
 public class HomePage extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener, FollowersFragment.OnFragmentInteractionListener {
     private static final String SELECTED_ITEM = "arg_selected_item";
@@ -24,7 +27,7 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
-
+        Toolbar toolbar = findViewById(R.id.toolbar);
         navBar = (BottomNavigationView) findViewById(R.id.navigation);
         navBar.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -33,6 +36,9 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
                 return true;
             }
         });
+
+        // TODO: Showing token here only for tests, remove it.
+        Log.d("TOKEN", Authentication.getToken(getApplicationContext()));
 
         MenuItem selectedItem;
 
