@@ -22,7 +22,7 @@
 
 
     <string name="menu_profile">Profile</string>
-    <string name="menu_repositories">Repositories</string>
+    <string name="menu_repos">Repositories</string>
     <string name="menu_followers">Followers</string>
 
     <!-- TODO: Remove or change this placeholder text -->

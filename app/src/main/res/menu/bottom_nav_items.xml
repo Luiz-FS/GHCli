@@ -1,9 +1,13 @@
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/menu_followers"
-        android:title="@string/menu_followers" />
-    <item
         android:id="@+id/menu_profile"
         android:title="@string/menu_profile" />
+    <item
+        android:id="@+id/menu_repos"
+        android:title="@string/menu_repos" />
+    <item
+        android:id="@+id/menu_followers"
+        android:title="@string/menu_followers" />
+
 </menu>
