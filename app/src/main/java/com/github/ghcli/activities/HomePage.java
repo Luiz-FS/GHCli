@@ -16,7 +16,7 @@ import android.util.Log;
 import com.github.ghcli.R;
 import com.github.ghcli.util.Authentication;
 
-public class HomePage extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener, FollowersFragment.OnFragmentInteractionListener {
+public class HomePage extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener, FollowersFragment.OnFragmentInteractionListener, ReposFragment.OnFragmentInteractionListener {
     private static final String SELECTED_ITEM = "arg_selected_item";
 
 
@@ -55,10 +55,13 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
         Fragment frag = null;
         // init corresponding fragment
         switch (item.getItemId()) {
-            case R.id.menu_profile:
+            case R.id.navbar_profile:
                 frag = ProfileFragment.newInstance("test1","test2");
                 break;
-            case R.id.menu_followers:
+            case R.id.navbar_repos:
+                frag = ReposFragment.newInstance("teste1","teste2");
+                break;
+            case R.id.navbar_followers:
                 frag = FollowersFragment.newInstance("teste1","teste2");
                 break;
         }
