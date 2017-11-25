@@ -15,15 +15,7 @@ import android.util.Log;
 
 
 import com.github.ghcli.R;
-import com.github.ghcli.models.GitHubUser;
-import com.github.ghcli.service.ServiceGenerator;
-import com.github.ghcli.service.clients.IGitHubUser;
 import com.github.ghcli.util.Authentication;
-
-import java.io.IOException;
-import java.util.List;
-
-import retrofit2.Call;
 
 public class HomePage extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener, FollowersFragment.OnFragmentInteractionListener, ReposFragment.OnFragmentInteractionListener {
     private static final String SELECTED_ITEM = "arg_selected_item";
