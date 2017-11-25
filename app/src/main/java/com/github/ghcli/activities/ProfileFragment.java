@@ -3,12 +3,28 @@ package com.github.ghcli.activities;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.github.ghcli.R;
+import com.github.ghcli.models.GitHubUser;
+import com.github.ghcli.service.ServiceGenerator;
+import com.github.ghcli.service.clients.IGitHubUser;
+import com.github.ghcli.util.Authentication;
+import com.squareup.picasso.Picasso;
+
+import butterknife.BindView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,6 +45,10 @@ public class ProfileFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    private ImageView fotoPerfil;
+
+    private TextView nomePerfil;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -64,7 +84,32 @@ public class ProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        final View view = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        IGitHubUser gitHubUserClient = ServiceGenerator.createService(IGitHubUser.class);;
+
+        Call<GitHubUser> requestUser = gitHubUserClient.getUser(Authentication.getToken(view.getContext()));
+
+        fotoPerfil = (ImageView) view.findViewById(R.id.fotoPerfil);
+        nomePerfil = (TextView) view.findViewById(R.id.nomePerfil);
+
+        requestUser.enqueue(new Callback<GitHubUser>() {
+            @Override
+            public void onResponse(@NonNull Call<GitHubUser> call, @NonNull Response<GitHubUser> response) {
+                if (response.isSuccessful()) {
+                    GitHubUser user = response.body();
+
+                    Picasso.with(view.getContext()).load(user.getAvatarUrl()).into(fotoPerfil);
+                    nomePerfil.setText(user.getName());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GitHubUser> call, Throwable t) {
+                // faz nada, por enquanto
+            }
+        });
+
         return view;
     }
 

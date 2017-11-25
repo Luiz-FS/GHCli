@@ -1,5 +1,6 @@
 package com.github.ghcli.activities;
 
+import android.annotation.SuppressLint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -19,7 +20,6 @@ import com.github.ghcli.util.Authentication;
 
 public class HomePage extends AppCompatActivity implements ProfileFragment.OnFragmentInteractionListener, FollowersFragment.OnFragmentInteractionListener, ReposFragment.OnFragmentInteractionListener {
     private static final String SELECTED_ITEM = "arg_selected_item";
-
 
     private BottomNavigationView navBar;
     private int mSelectedItem;
@@ -49,7 +49,7 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
             mSelectedItem = savedInstanceState.getInt(SELECTED_ITEM, 0);
             selectedItem = navBar.getMenu().findItem(mSelectedItem);
         } else {
-            selectedItem = navBar.getMenu().getItem(1);
+            selectedItem = navBar.getMenu().getItem(2);
         }
         selectFragment(selectedItem);
     }
