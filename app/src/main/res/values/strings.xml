@@ -19,6 +19,9 @@
     <string name="no_connection">No internet connection</string>
     <string name="wait_connecting">Wait while connecting...</string>
 
+    <!--Messages Profile Page-->
+    <string name="no_response">No response to this request</string>
+    <string name="response_failed">Response failed to this request</string>
 
     <string name="menu_profile">Profile</string>
     <string name="menu_repos">Repositories</string>

@@ -17,9 +17,11 @@ import com.github.ghcli.models.GitHubUser;
 import com.github.ghcli.service.ServiceGenerator;
 import com.github.ghcli.service.clients.IGitHubUser;
 import com.github.ghcli.util.Authentication;
+import com.github.ghcli.util.Message;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,20 +37,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * create an instance of this fragment.
  */
 public class ProfileFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private static final String ARG_USER = "user";
 
     private OnFragmentInteractionListener mListener;
+    private GitHubUser user;
 
-    private ImageView fotoPerfil;
-
-    private TextView nomePerfil;
+    @BindView(R.id.profileImage) ImageView profileImage;
+    @BindView(R.id.profileName) TextView profileName;
+    @BindView(R.id.imageGit) ImageView imageGit;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -58,16 +54,15 @@ public class ProfileFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment ProfileFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ProfileFragment newInstance(String param1, String param2) {
+    public static ProfileFragment newInstance(GitHubUser user) {
         ProfileFragment fragment = new ProfileFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        if (user != null) {
+            args.putParcelable(ARG_USER, user);
+        }
         fragment.setArguments(args);
         return fragment;
     }
@@ -76,8 +71,7 @@ public class ProfileFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            user = getArguments().getParcelable(ARG_USER);
         }
     }
 
@@ -85,30 +79,11 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        ButterKnife.bind(this, view);
 
-        IGitHubUser gitHubUserClient = ServiceGenerator.createService(IGitHubUser.class);;
-
-        Call<GitHubUser> requestUser = gitHubUserClient.getUser(Authentication.getToken(view.getContext()));
-
-        fotoPerfil = (ImageView) view.findViewById(R.id.fotoPerfil);
-        nomePerfil = (TextView) view.findViewById(R.id.nomePerfil);
-
-        requestUser.enqueue(new Callback<GitHubUser>() {
-            @Override
-            public void onResponse(@NonNull Call<GitHubUser> call, @NonNull Response<GitHubUser> response) {
-                if (response.isSuccessful()) {
-                    GitHubUser user = response.body();
-
-                    Picasso.with(view.getContext()).load(user.getAvatarUrl()).into(fotoPerfil);
-                    nomePerfil.setText(user.getName());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<GitHubUser> call, Throwable t) {
-                // faz nada, por enquanto
-            }
-        });
+        Picasso.with(view.getContext()).load(user.getAvatarUrl()).into(profileImage);
+        Picasso.with(view.getContext()).load("https://assets-cdn.github.com/images/modules/open_graph/github-mark.png").into(imageGit);
+        profileName.setText(user.getName());
 
         return view;
     }
