@@ -4,11 +4,24 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.github.ghcli.R;
+import com.github.ghcli.adapter.ListFollowersAdapter;
+import com.github.ghcli.models.GitHubUser;
+import com.github.ghcli.service.ServiceGenerator;
+import com.github.ghcli.service.clients.IGitHubUser;
+import com.github.ghcli.util.Authentication;
+
+import java.io.IOException;
+import java.util.List;
+
+import butterknife.BindView;
+import retrofit2.Call;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,16 +32,14 @@ import com.github.ghcli.R;
  * create an instance of this fragment.
  */
 public class FollowersFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private IGitHubUser iGitHubUser;
 
     public FollowersFragment() {
         // Required empty public constructor
@@ -52,6 +63,21 @@ public class FollowersFragment extends Fragment {
         return fragment;
     }
 
+    private List<GitHubUser> getFollowers(Context context) {
+        IGitHubUser iGitHubUser = ServiceGenerator.createService(IGitHubUser.class);
+        Call<List<GitHubUser>> callFollowers = iGitHubUser.getFollowers(Authentication.getToken(context));
+
+        List<GitHubUser> followers = null;
+
+        try {
+            followers = callFollowers.execute().body();
+            System.out.println(followers);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return followers;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +91,17 @@ public class FollowersFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_followers, container, false);
+        View view = inflater.inflate(R.layout.fragment_followers, container, false);
+        RecyclerView recyclerView = view.findViewById(R.id.followers_recyclerView);
+        Context context = getActivity().getApplicationContext();
+        List<GitHubUser> followers = this.getFollowers(context);
+        recyclerView.setAdapter(new ListFollowersAdapter(followers, context));
+        RecyclerView.LayoutManager layout = new LinearLayoutManager(
+                getActivity().getApplicationContext(),
+                LinearLayoutManager.VERTICAL,
+                false);
+        recyclerView.setLayoutManager(layout);
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -91,6 +127,15 @@ public class FollowersFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
+    public IGitHubUser getiGitHubUser() {
+        return iGitHubUser;
+    }
+
+    public void setiGitHubUser(IGitHubUser iGitHubUser) {
+        this.iGitHubUser = iGitHubUser;
+    }
+
 
     /**
      * This interface must be implemented by activities that contain this

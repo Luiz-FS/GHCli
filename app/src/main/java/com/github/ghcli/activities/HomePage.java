@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -65,7 +66,7 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
                 frag = ReposFragment.newInstance("teste1","teste2");
                 break;
             case R.id.navbar_followers:
-                frag = FollowersFragment.newInstance("teste1","teste2");
+                frag = FollowersFragment.newInstance("teste1", "teste2");
                 break;
         }
 
