@@ -58,7 +58,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:fontFamily="casual"
-                android:text="Nome"
+                android:text="@string/nome_default_user"
                 android:textAlignment="center"
                 android:textSize="24sp"
                 android:textStyle="bold"
@@ -113,7 +113,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Profile"
+                android:text="@string/profile_text"
                 android:textAlignment="center"
                 android:textColor="@color/colorAccent"
                 android:textSize="20sp" />
