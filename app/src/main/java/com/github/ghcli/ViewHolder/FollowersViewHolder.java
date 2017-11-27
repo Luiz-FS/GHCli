@@ -2,6 +2,7 @@ package com.github.ghcli.ViewHolder;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +17,8 @@ import com.squareup.picasso.Picasso;
 import java.io.IOException;
 
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class FollowersViewHolder extends RecyclerView.ViewHolder {
     private final String FOLLOW = "FOLLOW";
@@ -26,7 +29,7 @@ public class FollowersViewHolder extends RecyclerView.ViewHolder {
     private View view;
     private Context context;
     private IGitHubUser iGitHubUser;
-    private boolean isFollowing;
+    private boolean following;
 
     public FollowersViewHolder(View itemView, IGitHubUser iGitHubUser, Context context) {
         super(itemView);
@@ -37,47 +40,73 @@ public class FollowersViewHolder extends RecyclerView.ViewHolder {
         this.context = context;
         this.iGitHubUser = iGitHubUser;
         this.login.setTextColor(Color.BLACK);
+        this.login.setEnabled(false);
         setActionButton();
     }
 
     private void isFollowing() {
         Call<Void> isFollowing = iGitHubUser.isFollowing(Authentication.getToken(context), login.getText().toString());
-        try {
-            if (isFollowing.execute().headers().get("status").equals("204 No Content")) {
-                this.isFollowing = true;
-                this.follow.setText(UNFOLLOW);
+        isFollowing.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call,
+                                   @NonNull Response<Void> response) {
+                if (response.isSuccessful()) {
+                    following = true;
+                    follow.setText(UNFOLLOW);
+                    follow.setEnabled(true);
+                }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+            }
+        });
     }
 
     private void setActionButton() {
         this.follow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    if (isFollowing) {
-                        Call<Void> unfollow = iGitHubUser.unfollow(
-                                Authentication.getToken(context),
-                                login.getText().toString());
+                if (following) {
+                    Call<Void> call = iGitHubUser.unfollow(
+                            Authentication.getToken(context),
+                            login.getText().toString());
 
-                        if (unfollow.execute().headers().get("status").equals("204 No Content")) {
-                            follow.setText(FOLLOW);
-                            isFollowing = false;
+                    call.enqueue(new Callback<Void>() {
+                        @Override
+                        public void onResponse(@NonNull Call<Void> call,
+                                               @NonNull Response<Void> response) {
+                            if (response.isSuccessful()) {
+                                follow.setText(FOLLOW);
+                                following = false;
+                            }
                         }
-                    } else {
-                        Call<Void> following = iGitHubUser.follow(
-                                Authentication.getToken(context),
-                                login.getText().toString());
 
-                        if (following.execute().headers().get("status").equals("204 No Content")) {
-                            follow.setText(UNFOLLOW);
-                            isFollowing = true;
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+
                         }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    });
+                } else {
+                    Call<Void> call = iGitHubUser.follow(
+                            Authentication.getToken(context),
+                            login.getText().toString());
+
+                    call.enqueue(new Callback<Void>() {
+                        @Override
+                        public void onResponse(@NonNull Call<Void> call,
+                                               @NonNull Response<Void> response) {
+                            if (response.isSuccessful()) {
+                                follow.setText(UNFOLLOW);
+                                following = true;
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+
+                        }
+                    });
                 }
             }
         });
