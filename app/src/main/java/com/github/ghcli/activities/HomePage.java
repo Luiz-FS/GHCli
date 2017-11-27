@@ -57,6 +57,7 @@ public class HomePage extends AppCompatActivity implements ProfileFragment.OnFra
             }
         });
 
+        // get user from login page
         Intent intent = getIntent();
         this.user = intent.getParcelableExtra(KEY_USER);
 

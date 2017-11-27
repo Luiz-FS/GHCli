@@ -1,8 +1,11 @@
 package com.github.ghcli.activities;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
 import android.net.Uri;
 import android.os.Bundle;
+import android.renderscript.Allocation;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -19,25 +22,24 @@ import com.github.ghcli.service.clients.IGitHubUser;
 import com.github.ghcli.util.Authentication;
 import com.github.ghcli.util.Message;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
+
+import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import jp.wasabeef.picasso.transformations.CropCircleTransformation;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ProfileFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ProfileFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import static android.graphics.Bitmap.createBitmap;
+
 public class ProfileFragment extends Fragment {
     private static final String ARG_USER = "user";
+    private static final String PATH_IMAGE_GIT = "https://assets-cdn.github.com/images/modules/open_graph/github-mark.png";
 
     private OnFragmentInteractionListener mListener;
     private GitHubUser user;
@@ -56,7 +58,6 @@ public class ProfileFragment extends Fragment {
      *
      * @return A new instance of fragment ProfileFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static ProfileFragment newInstance(GitHubUser user) {
         ProfileFragment fragment = new ProfileFragment();
         Bundle args = new Bundle();
@@ -81,14 +82,13 @@ public class ProfileFragment extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_profile, container, false);
         ButterKnife.bind(this, view);
 
-        Picasso.with(view.getContext()).load(user.getAvatarUrl()).into(profileImage);
-        Picasso.with(view.getContext()).load("https://assets-cdn.github.com/images/modules/open_graph/github-mark.png").into(imageGit);
+        Picasso.with(view.getContext()).load(user.getAvatarUrl()).transform(new CropCircleTransformation()).error(R.mipmap.octocat).into(profileImage);
+        Picasso.with(view.getContext()).load(PATH_IMAGE_GIT).transform(new CropCircleTransformation()).error(R.mipmap.octocat).into(imageGit);
         profileName.setText(user.getName());
 
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -123,7 +123,6 @@ public class ProfileFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 }
