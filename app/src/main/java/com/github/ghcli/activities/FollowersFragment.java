@@ -3,12 +3,14 @@ package com.github.ghcli.activities;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.github.ghcli.R;
 import com.github.ghcli.adapter.ListFollowersAdapter;
@@ -21,7 +23,10 @@ import java.io.IOException;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,11 +40,15 @@ public class FollowersFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    @BindView(R.id.progressBar) ProgressBar progressBar;
+    @BindView(R.id.followers_recyclerView) RecyclerView recyclerView;
+
     private String mParam1;
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
     private IGitHubUser iGitHubUser;
+    private Context context;
 
     public FollowersFragment() {
         // Required empty public constructor
@@ -64,17 +73,30 @@ public class FollowersFragment extends Fragment {
         return fragment;
     }
 
-    private List<GitHubUser> getFollowers(Context context) {
+    private void getFollowers() {
         Call<List<GitHubUser>> callFollowers = iGitHubUser.getFollowers(Authentication.getToken(context));
+        progressBar.setVisibility(View.VISIBLE);
+        callFollowers.enqueue(new Callback<List<GitHubUser>>() {
+            @Override
+            public void onResponse(@NonNull Call<List<GitHubUser>> call,
+                                   @NonNull Response<List<GitHubUser>> response) {
+                if (response.isSuccessful()) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    List<GitHubUser> followers = response.body();
+                    recyclerView.setAdapter(new ListFollowersAdapter(followers, context, iGitHubUser));
+                    RecyclerView.LayoutManager layout = new LinearLayoutManager(
+                            context,
+                            LinearLayoutManager.VERTICAL,
+                            false);
+                    recyclerView.setLayoutManager(layout);
+                }
+            }
 
-        List<GitHubUser> followers = null;
+            @Override
+            public void onFailure(Call<List<GitHubUser>> call, Throwable t) {
 
-        try {
-            followers = callFollowers.execute().body();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return followers;
+            }
+        });
     }
 
     @Override
@@ -91,15 +113,9 @@ public class FollowersFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_followers, container, false);
-        RecyclerView recyclerView = view.findViewById(R.id.followers_recyclerView);
-        Context context = getActivity().getApplicationContext();
-        List<GitHubUser> followers = this.getFollowers(context);
-        recyclerView.setAdapter(new ListFollowersAdapter(followers, context, iGitHubUser));
-        RecyclerView.LayoutManager layout = new LinearLayoutManager(
-                getActivity().getApplicationContext(),
-                LinearLayoutManager.VERTICAL,
-                false);
-        recyclerView.setLayoutManager(layout);
+        ButterKnife.bind(this, view);
+        this.context = getActivity().getApplicationContext();
+        getFollowers();
         return view;
     }
 
