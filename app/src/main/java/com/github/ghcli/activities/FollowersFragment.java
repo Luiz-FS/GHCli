@@ -71,7 +71,6 @@ public class FollowersFragment extends Fragment {
 
         try {
             followers = callFollowers.execute().body();
-            System.out.println(followers);
         } catch (IOException e) {
             e.printStackTrace();
         }
