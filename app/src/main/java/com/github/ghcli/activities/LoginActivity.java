@@ -27,6 +27,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
+    private static final String KEY_USER = "user";
+
+    private GitHubUser user;
 
     @BindView(R.id.email) EditText email;
     @BindView(R.id.password) EditText password;
@@ -36,45 +39,45 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        ButterKnife.bind(this);
-
         String credentials = Authentication.getToken(getApplicationContext());
 
-        if (!Connection.isOnline(getApplicationContext())) {
-            Connection.snackbarWifi(findViewById(R.id.content_login), getApplicationContext());
-            signIn.setEnabled(false);
+        if (credentials == null) {
+            setContentView(R.layout.activity_login);
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while(!Connection.isOnline(getApplicationContext())){
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
+            ButterKnife.bind(this);
+
+            if (!Connection.isOnline(getApplicationContext())) {
+                Connection.snackbarWifi(findViewById(R.id.content_login), getApplicationContext());
+                signIn.setEnabled(false);
+
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (!Connection.isOnline(getApplicationContext())) {
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                signIn.setEnabled(true);
+                                linearLayout.setVisibility(View.INVISIBLE);
+                            }
+                        });
+
                     }
+                }).start();
+            }
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            signIn.setEnabled(true);
-                            linearLayout.setVisibility(View.INVISIBLE);
-                        }
-                    });
-
-                }
-            }).start();
-        }
-
-        // If credentials already exists, go to home page
-        if (credentials != null) {
-            startActivity(new Intent(getApplicationContext(), HomePage.class));
-            finish();
+        // If credentials already exists, get user and go to home page
+        } else {
+            loadUser(credentials);
         }
     }
 
@@ -85,6 +88,15 @@ public class LoginActivity extends AppCompatActivity {
 
         final String credentials = Credentials.basic(email, password);
 
+        loadUser(credentials);
+    }
+
+    @OnClick(R.id.close)
+    public void closeApp() {
+        finish();
+    }
+
+    private void loadUser(final String credentials) {
         IGitHubUser gitHubUserClient = ServiceGenerator.createService(IGitHubUser.class);
         Call<GitHubUser> call = gitHubUserClient.getUser(credentials);
 
@@ -96,8 +108,10 @@ public class LoginActivity extends AppCompatActivity {
                 // save the token and go to home page
                 if (response.isSuccessful()) {
                     Authentication.saveToken(getApplicationContext(), credentials);
-
-                    startActivity(new Intent(getApplicationContext(), HomePage.class));
+                    user = response.body();
+                    Intent intent = new Intent(getApplicationContext(), HomePage.class);
+                    intent.putExtra(KEY_USER, user);
+                    startActivity(intent);
                     finish();
                 } else {
                     Message.showSnackbar(getString(R.string.login_failed), findViewById(R.id.content_login));
@@ -109,10 +123,5 @@ public class LoginActivity extends AppCompatActivity {
                 Message.showSnackbar(getString(R.string.login_failed), findViewById(R.id.content_login));
             }
         });
-    }
-
-    @OnClick(R.id.close)
-    public void closeApp() {
-        finish();
     }
 }
