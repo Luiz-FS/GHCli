@@ -60,11 +60,11 @@ public class FollowersFragment extends Fragment {
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
+        fragment.setiGitHubUser(ServiceGenerator.createService(IGitHubUser.class));
         return fragment;
     }
 
     private List<GitHubUser> getFollowers(Context context) {
-        IGitHubUser iGitHubUser = ServiceGenerator.createService(IGitHubUser.class);
         Call<List<GitHubUser>> callFollowers = iGitHubUser.getFollowers(Authentication.getToken(context));
 
         List<GitHubUser> followers = null;
@@ -95,7 +95,7 @@ public class FollowersFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.followers_recyclerView);
         Context context = getActivity().getApplicationContext();
         List<GitHubUser> followers = this.getFollowers(context);
-        recyclerView.setAdapter(new ListFollowersAdapter(followers, context));
+        recyclerView.setAdapter(new ListFollowersAdapter(followers, context, iGitHubUser));
         RecyclerView.LayoutManager layout = new LinearLayoutManager(
                 getActivity().getApplicationContext(),
                 LinearLayoutManager.VERTICAL,
