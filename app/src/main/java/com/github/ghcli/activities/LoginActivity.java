@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.github.ghcli.R;
 import com.github.ghcli.models.GitHubUser;
@@ -35,48 +36,50 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.password) EditText password;
     @BindView(R.id.sign_in) Button signIn;
     @BindView(R.id.layout_error_connection) LinearLayout linearLayout;
+    @BindView(R.id.layoutLogin) LinearLayout layoutLogin;
+    @BindView(R.id.progressBarLogin) ProgressBar progressBarLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ButterKnife.bind(this);
+
         String credentials = Authentication.getToken(getApplicationContext());
+        layoutLogin.setVisibility(View.VISIBLE);
 
-        if (credentials == null) {
-            setContentView(R.layout.activity_login);
-            Toolbar toolbar = findViewById(R.id.toolbar);
-            setSupportActionBar(toolbar);
+        if (!Connection.isOnline(getApplicationContext())) {
+            Connection.snackbarWifi(findViewById(R.id.content_login), getApplicationContext());
+            signIn.setEnabled(false);
 
-            ButterKnife.bind(this);
-
-            if (!Connection.isOnline(getApplicationContext())) {
-                Connection.snackbarWifi(findViewById(R.id.content_login), getApplicationContext());
-                signIn.setEnabled(false);
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        while (!Connection.isOnline(getApplicationContext())) {
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (!Connection.isOnline(getApplicationContext())) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
                         }
-
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                signIn.setEnabled(true);
-                                linearLayout.setVisibility(View.INVISIBLE);
-                            }
-                        });
-
                     }
-                }).start();
-            }
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            signIn.setEnabled(true);
+                            linearLayout.setVisibility(View.INVISIBLE);
+                        }
+                    });
+
+                }
+            }).start();
+        }
 
         // If credentials already exists, get user and go to home page
-        } else {
+        if (credentials == null) {
             loadUser(credentials);
         }
     }
@@ -99,6 +102,8 @@ public class LoginActivity extends AppCompatActivity {
     private void loadUser(final String credentials) {
         IGitHubUser gitHubUserClient = ServiceGenerator.createService(IGitHubUser.class);
         Call<GitHubUser> call = gitHubUserClient.getUser(credentials);
+        layoutLogin.setVisibility(View.INVISIBLE);
+        progressBarLogin.setVisibility(View.VISIBLE);
 
         call.enqueue(new Callback<GitHubUser>() {
             @Override
@@ -107,6 +112,7 @@ public class LoginActivity extends AppCompatActivity {
                 // If username and password are valid information
                 // save the token and go to home page
                 if (response.isSuccessful()) {
+                    progressBarLogin.setVisibility(View.INVISIBLE);
                     Authentication.saveToken(getApplicationContext(), credentials);
                     user = response.body();
                     Intent intent = new Intent(getApplicationContext(), HomePage.class);
@@ -115,12 +121,16 @@ public class LoginActivity extends AppCompatActivity {
                     finish();
                 } else {
                     Message.showSnackbar(getString(R.string.login_failed), findViewById(R.id.content_login));
+                    progressBarLogin.setVisibility(View.INVISIBLE);
+                    layoutLogin.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<GitHubUser> call, @NonNull Throwable t) {
                 Message.showSnackbar(getString(R.string.login_failed), findViewById(R.id.content_login));
+                progressBarLogin.setVisibility(View.INVISIBLE);
+                layoutLogin.setVisibility(View.VISIBLE);
             }
         });
     }

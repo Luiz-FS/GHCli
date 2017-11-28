@@ -8,17 +8,18 @@
 
     <!-- TODO: Update blank fragment layout -->
     <android.support.constraint.ConstraintLayout
-        android:layout_width="340dp"
-        android:layout_height="445dp"
+        android:layout_width="301dp"
+        android:layout_height="414dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.813"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.16">
+        app:layout_constraintVertical_bias="0.0">
 
         <LinearLayout
             android:layout_width="367dp"
@@ -36,8 +37,8 @@
 
             <ImageView
                 android:id="@+id/profileImage"
-                android:layout_width="345dp"
-                android:layout_height="311dp"
+                android:layout_width="271dp"
+                android:layout_height="243dp"
                 android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
@@ -51,8 +52,8 @@
 
             <TextView
                 android:id="@+id/profileName"
-                android:layout_width="342dp"
-                android:layout_height="wrap_content"
+                android:layout_width="272dp"
+                android:layout_height="45dp"
                 android:layout_marginBottom="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
@@ -60,7 +61,7 @@
                 android:fontFamily="@font/montserrat"
                 android:text="@string/nome_default_user"
                 android:textAlignment="center"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
